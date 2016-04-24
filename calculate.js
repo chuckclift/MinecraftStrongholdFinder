@@ -45,6 +45,23 @@ function update() {
     draw_throw_lines(); 
 }
 
+function one_throw_update() {
+    var intercept = line_intersection(); 
+    var intercept_x = intercept[0];
+    var intercept_y = intercept[1]; 
+
+    var line1 = get_line(t1x, t1y, c1x, c1y); 
+    draw_line(line1,"white"); 
+
+    clear_canvas();
+    draw_axes(); 
+    draw_throw_lines(); 
+}
+
+
+
+
+
 function get_slope(x1, y1, x2, y2) {
     return  (y2 - y1) / (x2 - x1); 
 }
@@ -62,8 +79,7 @@ function parse_input_box(input_id) {
     return parseInt(document.getElementById(input_id).value); 
 }
 
-function read_input() {
-    var input_ids = ["t1x","t1y","c1x" ,"c1y" ,"t2x" ,"t2y" ,"c2x" ,"c2y"]; 
+function read_input(input_ids) {
     var input_values = {}; 
 
     for (var i=0; i<input_ids.length; i++) {
@@ -80,7 +96,9 @@ function get_line(x1,y1,x2,y2) {
 }
 
 function line_intersection() {
-    var input = read_input(); 
+
+    var input_ids = ["t1x","t1y","c1x" ,"c1y" ,"t2x" ,"t2y" ,"c2x" ,"c2y"]; 
+    var input = read_input(input_ids); 
 
     var t1x = input["t1x"]; 
     var t1y = input["t1y"]; 
@@ -104,8 +122,9 @@ function line_intersection() {
 
    
 function largest_coord_val() {
-
-    var input = read_input(); 
+  
+    var input_ids = ["t1x","t1y","c1x" ,"c1y" ,"t2x" ,"t2y" ,"c2x" ,"c2y"]; 
+    var input = read_input(input_ids); 
     var input_keys = Object.keys(input);
     var values = input_keys.map(function(v){return input[v];});
 
@@ -161,7 +180,8 @@ function transform_point(x,y,scale) {
 function draw_throw_lines() {
     // draws the lines coming from the throws to 
     // help visualize where they intersect
-    var input = read_input(); 
+    var input_ids = ["t1x","t1y","c1x" ,"c1y" ,"t2x" ,"t2y" ,"c2x" ,"c2y"]; 
+    var input = read_input(input_ids); 
 
     
     var t1x = input["t1x"]; 
