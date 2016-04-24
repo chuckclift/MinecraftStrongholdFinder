@@ -46,16 +46,23 @@ function update() {
 }
 
 function one_throw_update() {
+    var input_ids = ["throwx", "throwy", "catchx", "catchy"]; 
+    var input = read_input(input_ids); 
+
+    x1 = input["throwx"];
+    y1 = input["throwy"];
+    x2 = input["catchx"];
+    y2 = input["catchy"];
+    var line = get_line(x1, y1, x2, y2); 
+
+    clear_canvas();
+    draw_axes(); 
+    draw_line(line,"white"); 
+
     var intercept = line_intersection(); 
     var intercept_x = intercept[0];
     var intercept_y = intercept[1]; 
 
-    var line1 = get_line(t1x, t1y, c1x, c1y); 
-    draw_line(line1,"white"); 
-
-    clear_canvas();
-    draw_axes(); 
-    draw_throw_lines(); 
 }
 
 
@@ -76,6 +83,7 @@ function x_intersection(line1, line2) {
 }
 
 function parse_input_box(input_id) {
+    console.log(input_id); 
     return parseInt(document.getElementById(input_id).value); 
 }
 
@@ -83,6 +91,7 @@ function read_input(input_ids) {
     var input_values = {}; 
 
     for (var i=0; i<input_ids.length; i++) {
+        console.log(input_ids[i]); 
         id = input_ids[i]; 
         input_values[id] = parse_input_box(id);  
     }
@@ -121,28 +130,31 @@ function line_intersection() {
 
 
    
-function largest_coord_val() {
-  
-    var input_ids = ["t1x","t1y","c1x" ,"c1y" ,"t2x" ,"t2y" ,"c2x" ,"c2y"]; 
-    var input = read_input(input_ids); 
-    var input_keys = Object.keys(input);
-    var values = input_keys.map(function(v){return input[v];});
-
-    // adding the intersection point to the 
-    values = values.concat(line_intersection());   
-
+function largest_coord_val(input_object) {
+    console.log(input_object); 
+    var values = Object.keys(input_object).map(key => input_object[key]);
     var absolute_values = values.map(Math.abs); 
     return Math.max.apply(Math, absolute_values); 
 
 }
 
-function draw_line(line,color) {
+function get_scaling_factor(input_values) {
     c=document.getElementById("map"); 
+    var edge_value = largest_coord_val(input_values) + 100; 
+    return edge_value / (c.height / 2.1);
+}
 
+function get_edge_value(scale) {
+    c=document.getElementById("map"); 
+    return scale * c.height / 2.1; 
+}
+
+function draw_line(line, scaling_factor,color) {
+
+    c=document.getElementById("map"); 
     // The highest point value (x or y) that will be shown
-    var edge_value = largest_coord_val() + 100; 
-    var scaling_factor = edge_value / (c.height / 2.1) ;
 
+    var edge_value = get_edge_value(scaling_factor);  
     var x1 = -edge_value; 
     var x2 = edge_value; 
 
@@ -178,25 +190,36 @@ function transform_point(x,y,scale) {
 
 }
 function draw_throw_lines() {
+
     // draws the lines coming from the throws to 
     // help visualize where they intersect
     var input_ids = ["t1x","t1y","c1x" ,"c1y" ,"t2x" ,"t2y" ,"c2x" ,"c2y"]; 
-    var input = read_input(input_ids); 
 
+    var input_points = read_input(input_ids); 
+    [intersect_x, intersect_y] = line_intersection(); 
+
+    input_points["intersect_x"] = intersect_x;
+    input_points["intersect_y"] = intersect_y;
     
+    var scale = get_scaling_factor(input_points); 
+
+
+    var input = read_input(input_ids); 
     var t1x = input["t1x"]; 
     var t1y = input["t1y"]; 
     var c1x = input["c1x"]; 
     var c1y = input["c1y"]; 
     var line1 = get_line(t1x, t1y, c1x, c1y); 
-    draw_line(line1,"white"); 
+    draw_line(line1, scale,"white"); 
 
     var t2x = input["t2x"]; 
     var t2y = input["t2y"];         
     var c2x = input["c2x"];         
     var c2y = input["c2y"]; 
     var line2 = get_line(t2x, t2y, c2x, c2y); 
-    draw_line(line2, "white"); 
+    draw_line(line2, scale,  "white"); 
+
+
 }
 
 
