@@ -43,6 +43,7 @@ function update() {
     clear_canvas();
     draw_axes(); 
     draw_throw_lines(); 
+
 }
 
 function one_throw_update() {
@@ -53,20 +54,37 @@ function one_throw_update() {
     y1 = input["throwy"];
     x2 = input["catchx"];
     y2 = input["catchy"];
+
     var line = get_line(x1, y1, x2, y2); 
+    var scale = get_scaling_factor([x1, x2, y1, y2])
 
     clear_canvas();
     draw_axes(); 
-    draw_line(line,"white"); 
 
-    var intercept = line_intersection(); 
-    var intercept_x = intercept[0];
-    var intercept_y = intercept[1]; 
-
+    draw_line(line, scale,"white"); 
 }
 
+function draw_circle_intersections(x1, y1, x2, y2) {
+    radius1 = 1408;
+    radius2 = 2688;
+    
+    intersection1 = circle_intersection(x1, y1, x2, y2, radius1);
+    intersection2 = circle_intersection(x1, y1, x2, y2, radius2);
+    
+}
 
+function circle_intersection(x1, y1, x2, y2, r) {
+    direction = y2 - y1 > 0 ? 1 : -1;
+    
+    line = get_line(x1, y1, x2, y2)
+    intersect_y = direction * Math.sqrt(r - Math.pow(x,2) ); 
 
+    // based on y = mx + b  -> m*x = y - b -> x = (y - b) / m
+    intersect_x = (intersect_y - line['b']) / line['m'];
+    
+    
+    return {'x': intersect_x, 'y': intersect_y};
+}
 
 
 function get_slope(x1, y1, x2, y2) {
@@ -150,7 +168,6 @@ function get_edge_value(scale) {
 }
 
 function draw_line(line, scaling_factor,color) {
-
     c=document.getElementById("map"); 
     // The highest point value (x or y) that will be shown
 
@@ -175,6 +192,7 @@ function draw_line(line, scaling_factor,color) {
     cc.stroke();
 }
 
+
 function transform_point(x,y,scale) {
     /* trasforming values to fit onto map
         steps:
@@ -186,7 +204,6 @@ function transform_point(x,y,scale) {
     x = (x / scale) + c.width/2;
     y = (-y / scale) + c.height/2; 
     return [x,y]; 
-
 
 }
 function draw_throw_lines() {
