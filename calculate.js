@@ -38,11 +38,11 @@ function update() {
     var intercept_x = intercept[0];
     var intercept_y = intercept[1]; 
 
-    document.getElementById('result').innerHTML = Math.round(intercept_x) + 
-                                            ", " + Math.round(intercept_y)
     clear_canvas();
     draw_axes(); 
     draw_throw_lines(); 
+    update_results_text(Math.round(intercept_x) + ", " + Math.round(intercept_y));
+
 
 }
 
@@ -61,23 +61,31 @@ function one_throw_update() {
     clear_canvas();
     draw_axes(); 
 
-    draw_circle_intersection(x1, y1, x2, y2);
-}
-
-function draw_circle_intersection(x1, y1, x2, y2) {
     radius1 = 1408;
     radius2 = 2688;
     
     intersection1 = circle_intersection(x1, y1, x2, y2, radius1);
     intersection2 = circle_intersection(x1, y1, x2, y2, radius2);
-
-    console.log("intersection1: ", intersection1); 
-
-    draw_line_segment(intersection2['x'], intersection2['y'], 
-                      intersection1['x'], intersection1['y'], 
-                      "white"); 
     
+    int_x1 = Math.round(intersection1['x'])
+    int_y1 = Math.round(intersection1['y'])
+    int_x2 = Math.round(intersection2['x'])
+    int_y2 = Math.round(intersection2['y'])
+
+    draw_line_segment(int_x2, int_y2, int_x1, int_y1, "white"); 
+
+    point1 = "Stronghold between " + int_x1 + ", " + int_y1 + " and "; 
+    point2 =  int_x2 + ", " + int_y2; 
+    [midpoint_x, midpoint_y] = [(int_x1 + int_x2) / 2, (int_y1, int_y2) / 2]; 
+    midpoint_info = "<br/><br/> midpoint: " + midpoint_x + ", " +  midpoint_y; 
+
+    update_results_text(point1 + point2 + midpoint_info); 
 }
+
+function update_results_text(results) {
+    document.getElementById('result').innerHTML = results;  
+}
+
 
 function draw_line_segment(x1, y1, x2, y2, color) {
     c=document.getElementById("map"); 
