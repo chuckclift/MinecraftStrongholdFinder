@@ -61,29 +61,72 @@ function one_throw_update() {
     clear_canvas();
     draw_axes(); 
 
-    draw_line(line, scale,"white"); 
+    draw_circle_intersection(x1, y1, x2, y2);
 }
 
-function draw_circle_intersections(x1, y1, x2, y2) {
+function draw_circle_intersection(x1, y1, x2, y2) {
     radius1 = 1408;
     radius2 = 2688;
     
     intersection1 = circle_intersection(x1, y1, x2, y2, radius1);
     intersection2 = circle_intersection(x1, y1, x2, y2, radius2);
+
+    console.log("intersection1: ", intersection1); 
+
+    draw_line_segment(intersection2['x'], intersection2['y'], 
+                      intersection1['x'], intersection1['y'], 
+                      "white"); 
     
 }
 
-function circle_intersection(x1, y1, x2, y2, r) {
-    direction = y2 - y1 > 0 ? 1 : -1;
-    
-    line = get_line(x1, y1, x2, y2)
-    intersect_y = direction * Math.sqrt(r - Math.pow(x,2) ); 
+function draw_line_segment(x1, y1, x2, y2, color) {
+    c=document.getElementById("map"); 
+    scaling_factor = get_scaling_factor([3000]);
 
-    // based on y = mx + b  -> m*x = y - b -> x = (y - b) / m
-    intersect_x = (intersect_y - line['b']) / line['m'];
-    
-    
+    var point1 = transform_point(x1,y1, scaling_factor);
+    var point2 = transform_point(x2,y2, scaling_factor);
+
+    c=document.getElementById("map"); 
+    cc=c.getContext("2d"); 
+    cc.beginPath();
+    cc.moveTo(point1[0], point1[1]);
+    cc.lineTo(point2[0], point2[1]);
+    cc.lineWidth = 2;
+    // set line color
+    cc.strokeStyle = color;
+    cc.stroke();
+}
+
+function circle_intersection(x1, y1, x2, y2, r) {
+
+    dx = x2 - x1;
+    dy = y2 - y1;
+    dr = Math.sqrt(dx * dx + dy * dy); 
+    D = x1 * y2 - x2 * y1;
+
+    square_root = Math.sqrt( r * r * dr * dr - D * D); 
+    intersect_y_vals = [(-D * dx + Math.abs(dy) * square_root ) / (dr * dr), (-D * dx + Math.abs(dy) * square_root ) / (dr * dr)]; 
+
+
+    going_up = dy > 0; 
+    if (going_up) {
+        intersect_y = Math.max.apply(Math, intersect_y_vals); 
+    } else {
+        intersect_y = Math.min.apply(Math, intersect_y_vals); 
+    }
+
+    line = get_line(x1, y1, x2, y2); 
+    // y = mx + b  -> mx = y - b -> x = (y - b) / m
+    intersect_x =  (intersect_y - line['b']) / line['m']; 
+
     return {'x': intersect_x, 'y': intersect_y};
+}
+
+function quadratic_formula(a, b, c) {
+    squareroot = Math.sqrt(b * b - 4 * a * c); 
+    plus = (-1 * b + squareroot) / 2 * a
+    minus = (-1 * b - squareroot) / 2* a
+    return [plus, minus]; 
 }
 
 
@@ -101,7 +144,6 @@ function x_intersection(line1, line2) {
 }
 
 function parse_input_box(input_id) {
-    console.log(input_id); 
     return parseInt(document.getElementById(input_id).value); 
 }
 
@@ -109,7 +151,6 @@ function read_input(input_ids) {
     var input_values = {}; 
 
     for (var i=0; i<input_ids.length; i++) {
-        console.log(input_ids[i]); 
         id = input_ids[i]; 
         input_values[id] = parse_input_box(id);  
     }
@@ -149,7 +190,6 @@ function line_intersection() {
 
    
 function largest_coord_val(input_object) {
-    console.log(input_object); 
     var values = Object.keys(input_object).map(key => input_object[key]);
     var absolute_values = values.map(Math.abs); 
     return Math.max.apply(Math, absolute_values); 
