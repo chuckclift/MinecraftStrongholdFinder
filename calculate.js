@@ -287,4 +287,14 @@ function draw_throw_lines() {
 
 }
 
+function add_throw() {
+    var table = document.getElementById("inTable"); 
+    var tablesize = table.rows.length
+    var row = table.insertRow(tablesize);
 
+    var cells = []; 
+    for (i = 1; i < 6; i++) {cells.push(row.insertCell(0)); }
+
+    cells[4].innerHTML = "<p>Throw " + tablesize + "</p>";
+    for (i = 0; i < 4; i++) { cells[i].innerHTML = "<input type=\"text\">";}
+}
