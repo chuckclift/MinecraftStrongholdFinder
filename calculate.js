@@ -106,15 +106,20 @@ function draw_line_segment(x1, y1, x2, y2, color) {
 }
 
 function circle_intersection(x1, y1, x2, y2, r) {
-
+    /*
+       This is based on wolfram alpha's formula for 
+       finding the intersection point of the ray
+       of the throw and a circle.
+                      
+    */
     dx = x2 - x1;
     dy = y2 - y1;
     dr = Math.sqrt(dx * dx + dy * dy); 
     D = x1 * y2 - x2 * y1;
-
-    square_root = Math.sqrt( r * r * dr * dr - D * D); 
-    intersect_y_vals = [(-D * dx + Math.abs(dy) * square_root ) / (dr * dr), (-D * dx + Math.abs(dy) * square_root ) / (dr * dr)]; 
-
+    
+    discriminant =  r * r * dr * dr - D * D; 
+    intersect_y_vals = [(-D * dx + Math.abs(dy) * Math.sqrt(discriminant) ) / (dr * dr), 
+                        (-D * dx - Math.abs(dy) * Math.sqrt(discriminant) ) / (dr * dr)]; 
 
     going_up = dy > 0; 
     if (going_up) {
