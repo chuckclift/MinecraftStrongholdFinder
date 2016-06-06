@@ -57,21 +57,9 @@ function two_throw_update() {
     draw_axes(); 
     draw_throw_lines(); 
     update_results_text(Math.round(intercept_x) + ", " + Math.round(intercept_y));
-
-
 }
 
 function one_throw_update(x1, y1, x2, y2) {
-    /*
-    var input_ids = ["throwx", "throwy", "catchx", "catchy"]; 
-    var input = read_input(input_ids); 
-
-    x1 = input["throwx"];
-    y1 = input["throwy"];
-    x2 = input["catchx"];
-    y2 = input["catchy"];
-    */
-
     var line = get_line(x1, y1, x2, y2); 
     var scale = get_scaling_factor([x1, x2, y1, y2])
 
@@ -145,13 +133,6 @@ function circle_intersection(x1, y1, x2, y2, r) {
     intersect_x =  (intersect_y - line['b']) / line['m']; 
 
     return {'x': intersect_x, 'y': intersect_y};
-}
-
-function quadratic_formula(a, b, c) {
-    squareroot = Math.sqrt(b * b - 4 * a * c); 
-    plus = (-1 * b + squareroot) / 2 * a
-    minus = (-1 * b - squareroot) / 2* a
-    return [plus, minus]; 
 }
 
 
