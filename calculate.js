@@ -34,6 +34,21 @@ function draw_axes() {
 }
 
 function update() {
+    var table = document.getElementById("inTable"); 
+    if (table.rows.length == 1) {
+        input_table = read_table("inTable")[0]; 
+        x1 = input_table[0];
+        y1 = input_table[1];
+        x2 = input_table[2];
+        y2 = input_table[3]; 
+        console.log(x1, y1, x2, y2); 
+        one_throw_update(x1, y1, x2, y2);
+    } else {
+        two_throw_update(); 
+    }
+}
+
+function two_throw_update() {
     var intercept = line_intersection(); 
     var intercept_x = intercept[0];
     var intercept_y = intercept[1]; 
@@ -46,7 +61,8 @@ function update() {
 
 }
 
-function one_throw_update() {
+function one_throw_update(x1, y1, x2, y2) {
+    /*
     var input_ids = ["throwx", "throwy", "catchx", "catchy"]; 
     var input = read_input(input_ids); 
 
@@ -54,6 +70,7 @@ function one_throw_update() {
     y1 = input["throwy"];
     x2 = input["catchx"];
     y2 = input["catchy"];
+    */
 
     var line = get_line(x1, y1, x2, y2); 
     var scale = get_scaling_factor([x1, x2, y1, y2])
@@ -289,12 +306,30 @@ function draw_throw_lines() {
 
 function add_throw() {
     var table = document.getElementById("inTable"); 
-    var tablesize = table.rows.length
+    var tablesize = table.rows.length; 
     var row = table.insertRow(tablesize);
 
     var cells = []; 
     for (i = 1; i < 6; i++) {cells.push(row.insertCell(0)); }
 
-    cells[4].innerHTML = "<p>Throw " + tablesize + "</p>";
+    cells[4].innerHTML = "<p>Throw " + (tablesize + 1 )  + "</p>";
     for (i = 0; i < 4; i++) { cells[i].innerHTML = "<input type=\"text\">";}
+}
+
+function read_table(tableid) {
+    var table = document.getElementById(tableid); 
+    
+    var data_table = []
+    var throwx, throwy, catchx, catchy; 
+
+    for (i=0; i < table.rows.length ; i++) {
+        // the table is laid out like this: 
+        // row label |  throwx | throwy | catchx | catchy
+        throwx = parseInt(table.rows[i].cells[1].children[0].value); 
+        throwy = parseInt(table.rows[i].cells[2].children[0].value); 
+        catchx = parseInt(table.rows[i].cells[3].children[0].value); 
+        catchy = parseInt(table.rows[i].cells[4].children[0].value); 
+        data_table.push([throwx, throwy, catchx, catchy])
+    }
+    return data_table; 
 }
