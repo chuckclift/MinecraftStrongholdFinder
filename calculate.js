@@ -81,7 +81,10 @@ function one_throw_update(x1, y1, x2, y2) {
 
     point1 = "Stronghold between " + int_x1 + ", " + int_y1 + " and "; 
     point2 =  int_x2 + ", " + int_y2; 
-    [midpoint_x, midpoint_y] = [(int_x1 + int_x2) / 2, (int_y1, int_y2) / 2]; 
+
+    midpoint_x = (int_x1 + int_x2) / 2; 
+    midpoint_y = (int_y1 + int_y2) / 2; 
+
     midpoint_info = "<br/><br/> midpoint: " + midpoint_x + ", " +  midpoint_y; 
 
     update_results_text(point1 + point2 + midpoint_info); 
