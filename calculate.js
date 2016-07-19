@@ -137,22 +137,27 @@ function draw_line_segment(x1, y1, x2, y2, color) {
 }
 
 function circle_intersection(x1, y1, x2, y2, r) {
-
-    dx = x2 - x1;
-    dy = y2 - y1;
+    /*  
+       This is based on wolfram alpha's formula for 
+       finding the intersection point of the ray
+       of the throw and a circle.
+                      
+    */
+    dx = x2 - x1; 
+    dy = y2 - y1; 
     dr = Math.sqrt(dx * dx + dy * dy); 
-    D = x1 * y2 - x2 * y1;
+    D = x1 * y2 - x2 * y1; 
+    
+    discriminant =  r * r * dr * dr - D * D;  
+    intersect_y_vals = [(-D * dx + Math.abs(dy) * Math.sqrt(discriminant) ) / (dr * dr), 
+                        (-D * dx - Math.abs(dy) * Math.sqrt(discriminant) ) / (dr * dr)]; 
 
-    square_root = Math.sqrt( r * r * dr * dr - D * D); 
-    intersect_y_vals = [(-D * dx + Math.abs(dy) * square_root ) / (dr * dr), (-D * dx + Math.abs(dy) * square_root ) / (dr * dr)]; 
-
-
-    going_up = dy > 0; 
+    going_up = dy > 0;  
     if (going_up) {
         intersect_y = Math.max.apply(Math, intersect_y_vals); 
     } else {
         intersect_y = Math.min.apply(Math, intersect_y_vals); 
-    }
+    }   
 
     line = get_line(x1, y1, x2, y2); 
     // y = mx + b  -> mx = y - b -> x = (y - b) / m
@@ -160,7 +165,6 @@ function circle_intersection(x1, y1, x2, y2, r) {
 
     return {'x': intersect_x, 'y': intersect_y};
 }
-
 
 function get_slope(x1, y1, x2, y2) {
     return  (y2 - y1) / (x2 - x1); 
