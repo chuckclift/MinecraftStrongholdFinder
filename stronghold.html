@@ -32,52 +32,38 @@
 
 <table width="100%">
     <tr>
-        <td class="border" width="20%">
+        <td class="border" width="30%">
             <center>
-                <p>Throw 1</p>
-                <table>
-                    <tr>
-                        <td><p>throw x</p></td>
-                        <td><input type="text" id="t1x" value="-1222"></td>
-                        <td><p>throw y</p></td>
-                        <td><input type="text" id="t1y" value="1541"></td>
-                    </tr>
-                    <tr>
-                        <td><p>catch x</p></td>
-                        <td><input type="text" id="c1x" value="-1214"></td>
-                        <td><p>catch y</p></td>
-                        <td><input type="text" id="c1y" value="1532"></td>
-                    </tr>
-                </table>
-                <p>Throw 2</p>
-                <table>
-                    <tr>
-                        <td><p>throw x</p></td>
-                        <td><input type="text" id="t2x" value="-733"></td>
-                        <td><p>throw y</p></td>
-                        <td><input type="text" id="t2y" value="1030"></td>
-                    </tr>
-                    <tr>
-                        <td><p>catch x</p></td>
-                        <td><input type="text" id="c2x" value="-778"></td>
-                        <td><p>catch y</p></td>
-                        <td><input type="text" id="c2y" value="1039"></td>
-                    </tr>
+                <table >
+                    <thead>
+                        <tr>
+                            <td><p>       </p></td>
+                            <td><p>throw x</p></td>
+                            <td><p>throw y</p></td>
+                            <td><p>catch x</p></td>
+                            <td><p>catch y</p></td>
+                        </tr>
+                    </thead>
+                    <tbody id="inTable">
+                        <tr>
+                            <td><p>Throw 1</p></td>
+                            <td><input type="text" id="t1x" value="-1222"></td>
+                            <td><input type="text" id="t1y" value="1541"></td>
+                            <td><input type="text" id="c1x" value="-1214"></td>
+                            <td><input type="text" id="c1y" value="1532"></td>
+                        </tr>
+                    </tbody>
                 </table>
 
                 <button type="button" onclick="update()">Calculate</button>
+                <button type="button" onclick="add_throw()">add throw</button>
             
-                <table>
-                    <tr>
-                        <td><p>Stronghold at </p></td>
-                        <td><p id="result">?</p></td>
-                    </tr>
-                </table>
+                <p id="result">Stronghold location: ?</p>
 
 
             </center>
         </td>
-        <td class="border" width="80%">
+        <td class="border" width="70%">
             <center>
                 <br><br><canvas id="map" width="600" height="600"></canvas><br><br>   
             </center>
@@ -86,6 +72,5 @@
 </table>
 
 <script src="calculate.js"></script>
-
 </body>
 </html>

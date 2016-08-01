@@ -34,27 +34,55 @@ function draw_axes() {
 }
 
 function update() {
-    var intercept = line_intersection(); 
+    var table = document.getElementById("inTable"); 
+    if (table.rows.length == 1) {
+        input_table = read_table("inTable")[0]; 
+        x1 = input_table[0];
+        y1 = input_table[1];
+        x2 = input_table[2];
+        y2 = input_table[3]; 
+        console.log(x1, y1, x2, y2); 
+        one_throw_update(x1, y1, x2, y2);
+    } else if (table.rows.length == 2){
+        throw_1 = read_table("inTable")[0]; 
+        throw_2 = read_table("inTable")[1]; 
+        two_throw_update(throw_1, throw_2); 
+    }
+}
+
+function two_throw_update(throw_1, throw_2) {
+    throw_x1 = throw_1[0]
+    throw_y1 = throw_1[1]
+    catch_x1 = throw_1[2]
+    catch_y1 = throw_1[3]
+
+    throw_x2 = throw_2[0]
+    throw_y2 = throw_2[1]
+    catch_x2 = throw_2[2]
+    catch_y2 = throw_1[3]
+
+    var line1 = get_line(throw_x1, throw_y1, catch_x1, catch_y1); 
+    var line2 = get_line(throw_x2, throw_y2, catch_x2, catch_y2); 
+
+    var intercept = line_intersection(line1, line2); 
+
     var intercept_x = intercept[0];
     var intercept_y = intercept[1]; 
 
+    var largest_value = Math.max.apply(Math,throw_1.concat(throw_2))
+    var scale = get_scaling_factor(largest_value); 
+
+
     clear_canvas();
     draw_axes(); 
-    draw_throw_lines(); 
-    update_results_text(Math.round(intercept_x) + ", " + Math.round(intercept_y));
-
-
+    draw_throw_lines(line1, line2, scale); 
+    approx_x = Math.round(intercept_x); 
+    approx_y = Math.round(intercept_y)
+    update_results_text("Stronghold at approximately: " +  approx_x + ", " 
+                                                        + approx_y);
 }
 
-function one_throw_update() {
-    var input_ids = ["throwx", "throwy", "catchx", "catchy"]; 
-    var input = read_input(input_ids); 
-
-    x1 = input["throwx"];
-    y1 = input["throwy"];
-    x2 = input["catchx"];
-    y2 = input["catchy"];
-
+function one_throw_update(x1, y1, x2, y2) {
     var line = get_line(x1, y1, x2, y2); 
     var scale = get_scaling_factor([x1, x2, y1, y2])
 
@@ -76,7 +104,10 @@ function one_throw_update() {
 
     point1 = "Stronghold between " + int_x1 + ", " + int_y1 + " and "; 
     point2 =  int_x2 + ", " + int_y2; 
-    [midpoint_x, midpoint_y] = [(int_x1 + int_x2) / 2, (int_y1, int_y2) / 2]; 
+
+    midpoint_x = (int_x1 + int_x2) / 2; 
+    midpoint_y = (int_y1 + int_y2) / 2; 
+
     midpoint_info = "<br/><br/> midpoint: " + midpoint_x + ", " +  midpoint_y; 
 
     update_results_text(point1 + point2 + midpoint_info); 
@@ -89,7 +120,7 @@ function update_results_text(results) {
 
 function draw_line_segment(x1, y1, x2, y2, color) {
     c=document.getElementById("map"); 
-    scaling_factor = get_scaling_factor([3000]);
+    scaling_factor = get_scaling_factor(3000);
 
     var point1 = transform_point(x1,y1, scaling_factor);
     var point2 = transform_point(x2,y2, scaling_factor);
@@ -106,27 +137,27 @@ function draw_line_segment(x1, y1, x2, y2, color) {
 }
 
 function circle_intersection(x1, y1, x2, y2, r) {
-    /*
+    /*  
        This is based on wolfram alpha's formula for 
        finding the intersection point of the ray
        of the throw and a circle.
                       
     */
-    dx = x2 - x1;
-    dy = y2 - y1;
+    dx = x2 - x1; 
+    dy = y2 - y1; 
     dr = Math.sqrt(dx * dx + dy * dy); 
-    D = x1 * y2 - x2 * y1;
+    D = x1 * y2 - x2 * y1; 
     
-    discriminant =  r * r * dr * dr - D * D; 
+    discriminant =  r * r * dr * dr - D * D;  
     intersect_y_vals = [(-D * dx + Math.abs(dy) * Math.sqrt(discriminant) ) / (dr * dr), 
                         (-D * dx - Math.abs(dy) * Math.sqrt(discriminant) ) / (dr * dr)]; 
 
-    going_up = dy > 0; 
+    going_up = dy > 0;  
     if (going_up) {
         intersect_y = Math.max.apply(Math, intersect_y_vals); 
     } else {
         intersect_y = Math.min.apply(Math, intersect_y_vals); 
-    }
+    }   
 
     line = get_line(x1, y1, x2, y2); 
     // y = mx + b  -> mx = y - b -> x = (y - b) / m
@@ -134,14 +165,6 @@ function circle_intersection(x1, y1, x2, y2, r) {
 
     return {'x': intersect_x, 'y': intersect_y};
 }
-
-function quadratic_formula(a, b, c) {
-    squareroot = Math.sqrt(b * b - 4 * a * c); 
-    plus = (-1 * b + squareroot) / 2 * a
-    minus = (-1 * b - squareroot) / 2* a
-    return [plus, minus]; 
-}
-
 
 function get_slope(x1, y1, x2, y2) {
     return  (y2 - y1) / (x2 - x1); 
@@ -176,42 +199,16 @@ function get_line(x1,y1,x2,y2) {
     return {"m":m, "b":b}; 
 }
 
-function line_intersection() {
-
-    var input_ids = ["t1x","t1y","c1x" ,"c1y" ,"t2x" ,"t2y" ,"c2x" ,"c2y"]; 
-    var input = read_input(input_ids); 
-
-    var t1x = input["t1x"]; 
-    var t1y = input["t1y"]; 
-    var c1x = input["c1x"]; 
-    var c1y = input["c1y"]; 
-    
-    var t2x = input["t2x"]; 
-    var t2y = input["t2y"];         
-    var c2x = input["c2x"];         
-    var c2y = input["c2y"]; 
-
-    var line1 = get_line(t1x, t1y, c1x, c1y);  
-    var line2 = get_line(t2x, t2y, c2x, c2y); 
-
+function line_intersection(line1, line2) {
     intercept_x = x_intersection(line1, line2); 
 
     intercept_y = line1["m"] * intercept_x + line1["b"]; 
     return [intercept_x, intercept_y]; 
 }
 
-
-   
-function largest_coord_val(input_object) {
-    var values = Object.keys(input_object).map(key => input_object[key]);
-    var absolute_values = values.map(Math.abs); 
-    return Math.max.apply(Math, absolute_values); 
-
-}
-
-function get_scaling_factor(input_values) {
+function get_scaling_factor(largest_coordinate) {
     c=document.getElementById("map"); 
-    var edge_value = largest_coord_val(input_values) + 100; 
+    var edge_value = largest_coordinate + 100; 
     return edge_value / (c.height / 2.1);
 }
 
@@ -259,37 +256,53 @@ function transform_point(x,y,scale) {
     return [x,y]; 
 
 }
-function draw_throw_lines() {
+function draw_throw_lines(line1, line2, scale) {
 
     // draws the lines coming from the throws to 
     // help visualize where they intersect
+
+    /*
     var input_ids = ["t1x","t1y","c1x" ,"c1y" ,"t2x" ,"t2y" ,"c2x" ,"c2y"]; 
 
     var input_points = read_input(input_ids); 
-    [intersect_x, intersect_y] = line_intersection(); 
-
-    input_points["intersect_x"] = intersect_x;
-    input_points["intersect_y"] = intersect_y;
+    */
     
-    var scale = get_scaling_factor(input_points); 
+    // [intersect_x, intersect_y] = line_intersection(line1, line2); 
 
+    // input_points["intersect_x"] = intersect_x;
+    // input_points["intersect_y"] = intersect_y;
+    
 
-    var input = read_input(input_ids); 
-    var t1x = input["t1x"]; 
-    var t1y = input["t1y"]; 
-    var c1x = input["c1x"]; 
-    var c1y = input["c1y"]; 
-    var line1 = get_line(t1x, t1y, c1x, c1y); 
     draw_line(line1, scale,"white"); 
-
-    var t2x = input["t2x"]; 
-    var t2y = input["t2y"];         
-    var c2x = input["c2x"];         
-    var c2y = input["c2y"]; 
-    var line2 = get_line(t2x, t2y, c2x, c2y); 
     draw_line(line2, scale,  "white"); 
-
-
 }
 
+function add_throw() {
+    var table = document.getElementById("inTable"); 
+    var tablesize = table.rows.length; 
+    var row = table.insertRow(tablesize);
 
+    var cells = []; 
+    for (i = 1; i < 6; i++) {cells.push(row.insertCell(0)); }
+
+    cells[4].innerHTML = "<p>Throw " + (tablesize + 1 )  + "</p>";
+    for (i = 0; i < 4; i++) { cells[i].innerHTML = "<input type=\"text\">";}
+}
+
+function read_table(tableid) {
+    var table = document.getElementById(tableid); 
+    
+    var data_table = []
+    var throwx, throwy, catchx, catchy; 
+
+    for (i=0; i < table.rows.length ; i++) {
+        // the table is laid out like this: 
+        // row label |  throwx | throwy | catchx | catchy
+        throwx = parseInt(table.rows[i].cells[1].children[0].value); 
+        throwy = parseInt(table.rows[i].cells[2].children[0].value); 
+        catchx = parseInt(table.rows[i].cells[3].children[0].value); 
+        catchy = parseInt(table.rows[i].cells[4].children[0].value); 
+        data_table.push([throwx, throwy, catchx, catchy])
+    }
+    return data_table; 
+}
